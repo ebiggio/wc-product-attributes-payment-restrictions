@@ -58,7 +58,7 @@ function wc_papr_settings_page() {
 	// Retrieve all product attributes
 	$product_attributes = wc_get_attribute_taxonomies();
 
-	// Get the currently saved attribute (if any)
+	// Get the currently saved attributes (if any)
 	$selected_attributes = maybe_unserialize( get_option( 'wc-papr-product-attributes' ) );
 
 	// Display the settings form
@@ -79,7 +79,9 @@ function wc_papr_settings_page() {
                         <label for="wc-papr-product-attributes"><?php echo esc_html__( 'Product attributes', 'wc-papr' ) ?></label>
                     </th>
                     <td>
-                        <select name="wc-papr-product-attributes[]" id="wc-papr-product-attributes" placeholder="data-placeholder=<?php echo esc_attr__( 'Select product attributes', 'wc-papr' ); ?>" style="min-width: 400px" multiple>
+                        <select name="wc-papr-product-attributes[]" id="wc-papr-product-attributes"
+                                placeholder="data-placeholder=<?php echo esc_attr__( 'Select product attributes', 'wc-papr' ); ?>"
+                                style="width: 100%" multiple>
 							<?php
 							foreach ( $product_attributes as $attribute ) {
 								$attribute_name = $attribute->attribute_name;
@@ -92,7 +94,9 @@ function wc_papr_settings_page() {
 							}
 							?>
                         </select>
-                        <p class="description"><?php echo esc_html__( 'Select product attributes that you would like to configure to be compatible with specific payment methods.', 'wc-papr' ) ?></p>
+                        <p class="description">
+							<?php echo esc_html__( 'Select product attributes that you would like to configure to be compatible with specific payment methods.', 'wc-papr' ) ?>
+                        </p>
                     </td>
                 </tr>
             </table>
@@ -103,3 +107,116 @@ function wc_papr_settings_page() {
 	<?php
 }
 
+// Adds the payment method selection and saved data to the product attribute's terms defined in the settings page
+// Get the saved attributes (if any)
+$selected_attributes = maybe_unserialize( get_option( 'wc-papr-product-attributes' ) );
+
+if ( $selected_attributes ) {
+	foreach ( $selected_attributes as $attribute ) {
+		// Add a custom column to the product attribute's terms list
+		add_filter( 'manage_edit-pa_' . $attribute . '_columns', 'wp_papr_add_payment_method_column_header' );
+
+		// Populate the custom column with data
+		add_action( 'manage_pa_' . $attribute . '_custom_column', 'wp_papr_populate_payment_method_column_data', 10, 3 );
+
+		// Allows for the selection of compatible payment methods when adding a new term
+		add_action( 'pa_' . $attribute . '_add_form_fields', 'wc_papr_edit_term_add_payment_field', 10, 1 );
+
+		// Add the payment method selection to the product attribute's terms edit page
+		add_action( 'pa_' . $attribute . '_edit_form_fields', 'wc_papr_edit_term_add_payment_field', 10, 1 );
+
+		// Save the payment methods selected when adding a new term
+		add_action( 'created_pa_' . $attribute, 'wc_papr_save_term_payment_methods', 10, 1 );
+
+		// Save the payment methods selected for the term
+		add_action( 'edited_pa_' . $attribute, 'wc_papr_save_term_payment_methods', 10, 1 );
+	}
+}
+
+function wp_papr_add_payment_method_column_header( $columns ) {
+	$columns['wp_papr_payment_methods'] = 'Compatible payment methods';
+
+	return $columns;
+}
+
+function wp_papr_populate_payment_method_column_data( $custom_column, $column_name, $term_id ) {
+	if ( $column_name === 'wp_papr_payment_methods' ) {
+		$payment_methods            = WC()->payment_gateways->get_available_payment_gateways();
+		$compatible_payment_methods = '';
+
+		// Get the saved payment methods for this term
+		$term_payment_methods = get_term_meta( $term_id, '_wc_papr_payment_methods', true );
+		$term_payment_methods = $term_payment_methods ? maybe_unserialize( $term_payment_methods ) : [];
+
+		foreach ( $payment_methods as $method ) {
+			if ( $term_payment_methods && in_array( $method->id, $term_payment_methods, true ) ) {
+				$compatible_payment_methods .= '<span style="background: rgba(204,204,204,0.36); border-radius: 5px; padding: 3px; margin: 3px; display: inline-block">'
+				                               . $method->title . '</span>';
+			}
+		}
+
+		echo $compatible_payment_methods;
+	}
+}
+
+function wc_papr_edit_term_add_payment_field( $term ) {
+	if ( is_object( $term ) ) {
+		$term_payment_methods = get_term_meta( $term->term_id, '_wc_papr_payment_methods', true );
+		$term_payment_methods = $term_payment_methods ? maybe_unserialize( $term_payment_methods ) : [];
+	} else {
+		$term_payment_methods = [];
+	}
+
+	$payment_methods = WC()->payment_gateways->get_available_payment_gateways();
+	?>
+    <tr class="form-field">
+        <th scope="row">
+            <label for="wc-papr-payment-methods"><?php echo esc_html__( 'Payment methods compatible with this term', 'wc_papr' ); ?></label>
+        </th>
+
+        <td>
+            <select id="wc-papr-payment-methods" name="allowed_payment_methods[]"
+                    data-placeholder="<?php echo esc_attr__( 'Select payment methods', 'wc_papr' ); ?>" style="width: 100%" multiple>
+				<?php
+				if ( $payment_methods ) {
+					foreach ( $payment_methods as $method ) {
+						?>
+                        <option value="<?php echo esc_attr( $method->id ); ?>"
+							<?php if ( $term_payment_methods && in_array( $method->id, $term_payment_methods, true ) ) {
+								echo 'selected';
+							} ?>
+                        ><?php echo esc_html( $method->title ); ?></option>
+						<?php
+					}
+				}
+				?>
+            </select>
+            <p class="description">
+				<?php echo esc_html__( 'Select compatible payment methods for the products that use this term.', 'wc_papr' ); ?>
+            </p>
+        </td>
+    </tr>
+    <script>
+        (function ($) {
+            $(document).ready(function () {
+                // Initialize SelectWoo for the select field
+                $('#wc-papr-payment-methods').selectWoo();
+            });
+        })(jQuery);
+    </script>
+	<?php
+}
+
+function wc_papr_save_term_payment_methods( $term_id ) {
+	if ( isset( $_POST['allowed_payment_methods'] ) ) {
+		$payment_methods = WC()->payment_gateways->get_available_payment_gateways();
+
+		if ( is_array( $_POST['allowed_payment_methods'] ) ) {
+			$allowed_payment_methods = array_intersect( $_POST['allowed_payment_methods'], array_keys( $payment_methods ) );
+		} else {
+			$allowed_payment_methods = [];
+		}
+
+		update_term_meta( $term_id, '_wc_papr_payment_methods', maybe_serialize( $allowed_payment_methods ) );
+	}
+}
