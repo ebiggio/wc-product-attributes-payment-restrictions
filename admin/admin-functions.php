@@ -15,15 +15,15 @@ function wc_papr_add_admin_menu() {
 	);
 }
 
-// Enqueue admin scripts for the settings page
+// Enqueue admin scripts for the settings page so that we can use Select2 (since SelectWoo is not available in this instance)
 add_action( 'admin_enqueue_scripts', 'wc_papr_enqueue_admin_scripts' );
 function wc_papr_enqueue_admin_scripts( $hook_suffix ) {
 	// Enqueue script only on the settings page
 	if ( $hook_suffix === 'toplevel_page_wc-papr-settings' ) {
-		wp_enqueue_script( 'wc-papr', plugin_dir_url( __FILE__ ) . 'admin.js', array( 'jquery' ), '1.0.0', true );
+		wp_enqueue_script( 'wc-papr', plugin_dir_url( __FILE__ ) . 'admin.js', array( 'jquery' ), WC_PAPR_PLUGIN_VERSION, true );
 
 		// Enqueue Select2 library
-		wp_enqueue_script( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array( 'jquery' ), '1.0.0', true );
+		wp_enqueue_script( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array( 'jquery' ), WC_PAPR_PLUGIN_VERSION, true );
 
 		// Enqueue Select2 stylesheet
 		wp_enqueue_style( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css' );
