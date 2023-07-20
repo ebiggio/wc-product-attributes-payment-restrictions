@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 
 // Add a menu item for the plugin in the WordPress admin menu
 add_action( 'admin_menu', 'wc_papr_add_admin_menu' );
-function wc_papr_add_admin_menu() {
+function wc_papr_add_admin_menu(): void {
 	add_menu_page(
 		'Product Attributes Payment Restrictions',
 		'Product Attributes Payment Restrictions',
@@ -17,7 +17,7 @@ function wc_papr_add_admin_menu() {
 
 // Enqueue admin scripts for the settings page so that we can use Select2 (since SelectWoo is not available in this instance)
 add_action( 'admin_enqueue_scripts', 'wc_papr_enqueue_admin_scripts' );
-function wc_papr_enqueue_admin_scripts( $hook_suffix ) {
+function wc_papr_enqueue_admin_scripts( $hook_suffix ): void {
 	// Enqueue script only on the settings page
 	if ( $hook_suffix === 'toplevel_page_wc-papr-settings' ) {
 		wp_enqueue_script( 'wc-papr', plugin_dir_url( __FILE__ ) . 'admin.js', array( 'jquery' ), WC_PAPR_PLUGIN_VERSION, true );
@@ -31,7 +31,7 @@ function wc_papr_enqueue_admin_scripts( $hook_suffix ) {
 }
 
 // Display the settings page
-function wc_papr_settings_page() {
+function wc_papr_settings_page(): void {
 	// Check user capabilities
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
@@ -114,32 +114,32 @@ $selected_attributes = maybe_unserialize( get_option( 'wc-papr-product-attribute
 if ( $selected_attributes ) {
 	foreach ( $selected_attributes as $attribute ) {
 		// Add a custom column to the product attribute's terms list
-		add_filter( 'manage_edit-pa_' . $attribute . '_columns', 'wp_papr_add_payment_method_column_header' );
+		add_filter( 'manage_edit-pa_' . $attribute . '_columns', 'wc_papr_add_payment_method_column_header' );
 
 		// Populate the custom column with data
-		add_action( 'manage_pa_' . $attribute . '_custom_column', 'wp_papr_populate_payment_method_column_data', 10, 3 );
+		add_action( 'manage_pa_' . $attribute . '_custom_column', 'wc_papr_populate_payment_method_column_data', 10, 3 );
 
 		// Allows for the selection of compatible payment methods when adding a new term
-		add_action( 'pa_' . $attribute . '_add_form_fields', 'wc_papr_edit_term_add_payment_field', 10, 1 );
+		add_action( 'pa_' . $attribute . '_add_form_fields', 'wc_papr_edit_term_add_payment_field' );
 
 		// Add the payment method selection to the product attribute's terms edit page
-		add_action( 'pa_' . $attribute . '_edit_form_fields', 'wc_papr_edit_term_add_payment_field', 10, 1 );
+		add_action( 'pa_' . $attribute . '_edit_form_fields', 'wc_papr_edit_term_add_payment_field' );
 
 		// Save the payment methods selected when adding a new term
-		add_action( 'created_pa_' . $attribute, 'wc_papr_save_term_payment_methods', 10, 1 );
+		add_action( 'created_pa_' . $attribute, 'wc_papr_save_term_payment_methods' );
 
 		// Save the payment methods selected for the term
-		add_action( 'edited_pa_' . $attribute, 'wc_papr_save_term_payment_methods', 10, 1 );
+		add_action( 'edited_pa_' . $attribute, callback: 'wc_papr_save_term_payment_methods' );
 	}
 }
 
-function wp_papr_add_payment_method_column_header( $columns ) {
+function wc_papr_add_payment_method_column_header( $columns ) {
 	$columns['wp_papr_payment_methods'] = 'Compatible payment methods';
 
 	return $columns;
 }
 
-function wp_papr_populate_payment_method_column_data( $custom_column, $column_name, $term_id ) {
+function wc_papr_populate_payment_method_column_data( $custom_column, $column_name, $term_id ): void {
 	if ( $column_name === 'wp_papr_payment_methods' ) {
 		$payment_methods            = WC()->payment_gateways->get_available_payment_gateways();
 		$compatible_payment_methods = '';
@@ -159,7 +159,7 @@ function wp_papr_populate_payment_method_column_data( $custom_column, $column_na
 	}
 }
 
-function wc_papr_edit_term_add_payment_field( $term ) {
+function wc_papr_edit_term_add_payment_field( $term ): void {
 	if ( is_object( $term ) ) {
 		$term_payment_methods = get_term_meta( $term->term_id, '_wc_papr_payment_methods', true );
 		$term_payment_methods = $term_payment_methods ? maybe_unserialize( $term_payment_methods ) : [];
@@ -207,7 +207,7 @@ function wc_papr_edit_term_add_payment_field( $term ) {
 	<?php
 }
 
-function wc_papr_save_term_payment_methods( $term_id ) {
+function wc_papr_save_term_payment_methods( $term_id ): void {
 	if ( isset( $_POST['allowed_payment_methods'] ) ) {
 		$payment_methods = WC()->payment_gateways->get_available_payment_gateways();
 
