@@ -76,7 +76,7 @@ function wc_papr_settings_page(): void {
             <table class="form-table">
                 <tr>
                     <th scope="row">
-                        <label for="wc-papr-product-attributes"><?php echo esc_html__( 'Product attributes', 'wc-papr' ) ?></label>
+                        <label for="wc-papr-product-attributes"><?php echo esc_html__( 'Product attributes to be configured', 'wc-papr' ) ?></label>
                     </th>
                     <td>
                         <select name="wc-papr-product-attributes[]" id="wc-papr-product-attributes"
@@ -95,7 +95,7 @@ function wc_papr_settings_page(): void {
 							?>
                         </select>
                         <p class="description">
-							<?php echo esc_html__( 'Select product attributes that you would like to configure to be compatible with specific payment methods.', 'wc-papr' ) ?>
+							<?php echo esc_html__( 'Select product attributes that you would like to configure to be compatible with specific payment methods. After this selection, you can configure the selected attribute\'s terms in the Attributes page to specify which payment methods are compatible with each term.', 'wc-papr' ) ?>
                         </p>
                     </td>
                 </tr>
@@ -211,12 +211,10 @@ function wc_papr_save_term_payment_methods( $term_id ): void {
 	if ( isset( $_POST['allowed_payment_methods'] ) ) {
 		$payment_methods = WC()->payment_gateways->get_available_payment_gateways();
 
-		if ( is_array( $_POST['allowed_payment_methods'] ) ) {
-			$allowed_payment_methods = array_intersect( $_POST['allowed_payment_methods'], array_keys( $payment_methods ) );
-		} else {
-			$allowed_payment_methods = [];
-		}
+		$allowed_payment_methods = array_intersect( $_POST['allowed_payment_methods'], array_keys( $payment_methods ) );
 
 		update_term_meta( $term_id, '_wc_papr_payment_methods', maybe_serialize( $allowed_payment_methods ) );
+	} else {
+		delete_term_meta( $term_id, '_wc_papr_payment_methods' );
 	}
 }
