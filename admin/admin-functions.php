@@ -49,10 +49,12 @@ function wc_papr_settings_page(): void {
 			}
 
 			// Save the data in the database
-			update_option( 'wc-papr-product-attributes', maybe_serialize( $selected_attributes ) );
-
-			$save_successfully = true;
+			update_option( 'wc_papr_product_attributes', maybe_serialize( $selected_attributes ) );
+		} else {
+			delete_option( 'wc_papr_product_attributes' );
 		}
+
+		$save_successfully = true;
 	}
 
 	// Retrieve all product attributes
