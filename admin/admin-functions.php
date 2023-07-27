@@ -20,7 +20,7 @@ add_action( 'admin_enqueue_scripts', 'wc_papr_enqueue_admin_scripts' );
 function wc_papr_enqueue_admin_scripts( $hook_suffix ): void {
 	// Enqueue script only on the settings page
 	if ( $hook_suffix === 'toplevel_page_wc-papr-settings' ) {
-		wp_enqueue_script( 'wc-papr', plugin_dir_url( __FILE__ ) . 'admin.js', array( 'jquery' ), WC_PAPR_PLUGIN_VERSION, true );
+		wp_enqueue_script( 'wc_papr', plugin_dir_url( __FILE__ ) . 'admin.js', array( 'jquery' ), WC_PAPR_PLUGIN_VERSION, true );
 
 		// Enqueue Select2 library
 		wp_enqueue_script( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array( 'jquery' ), WC_PAPR_PLUGIN_VERSION, true );
@@ -41,7 +41,7 @@ function wc_papr_settings_page(): void {
 	$save_successfully = false;
 
 	if ( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
-		if ( isset( $_POST['wc-papr-product-attributes'] ) && is_array( $selected_attributes = $_POST['wc-papr-product-attributes'] ) ) {
+		if ( isset( $_POST['wc_papr_product_attributes'] ) && $selected_attributes = $_POST['wc_papr_product_attributes'] ) {
 			foreach ( $selected_attributes as $attribute ) {
 				if ( ! taxonomy_exists( 'pa_' . $attribute ) ) {
 					wp_die( 'Invalid attribute' );
@@ -61,7 +61,7 @@ function wc_papr_settings_page(): void {
 	$product_attributes = wc_get_attribute_taxonomies();
 
 	// Get the currently saved attributes (if any)
-	$selected_attributes = maybe_unserialize( get_option( 'wc-papr-product-attributes' ) );
+	$selected_attributes = maybe_unserialize( get_option( 'wc_papr_product_attributes' ) );
 
 	// Display the settings form
 	?>
@@ -70,7 +70,7 @@ function wc_papr_settings_page(): void {
 
 		<?php if ( $save_successfully ) { ?>
             <div class="notice notice-success is-dismissible">
-                <p><?php echo esc_html__( 'Settings saved successfully.', 'wc-papr' ); ?></p>
+                <p><?php echo esc_html__( 'Settings saved successfully.', 'wc_papr' ); ?></p>
             </div>
 		<?php } ?>
 
@@ -78,11 +78,11 @@ function wc_papr_settings_page(): void {
             <table class="form-table">
                 <tr>
                     <th scope="row">
-                        <label for="wc-papr-product-attributes"><?php echo esc_html__( 'Product attributes to be configured', 'wc-papr' ) ?></label>
+                        <label for="wc-papr-product-attributes"><?php echo esc_html__( 'Product attributes to be configured', 'wc_papr' ) ?></label>
                     </th>
                     <td>
-                        <select name="wc-papr-product-attributes[]" id="wc-papr-product-attributes"
-                                placeholder="data-placeholder=<?php echo esc_attr__( 'Select product attributes', 'wc-papr' ); ?>"
+                        <select name="wc_papr_product_attributes[]" id="wc-papr-product-attributes"
+                                placeholder="data-placeholder=<?php echo esc_attr__( 'Select product attributes', 'wc_papr' ); ?>"
                                 style="width: 100%" multiple>
 							<?php
 							foreach ( $product_attributes as $attribute ) {
@@ -97,13 +97,15 @@ function wc_papr_settings_page(): void {
 							?>
                         </select>
                         <p class="description">
-							<?php echo esc_html__( 'Select product attributes that you would like to configure to be compatible with specific payment methods. After this selection, you can configure the selected attribute\'s terms in the Attributes page to specify which payment methods are compatible with each term.', 'wc-papr' ) ?>
+							<?php echo esc_html__( 'Select product attributes that you would like to configure to be compatible with specific payment methods.
+							 After this selection, you can configure the selected attribute\'s terms in the Attributes page to specify which payment methods are
+							  compatible with each term.', 'wc_papr' ) ?>
                         </p>
                     </td>
                 </tr>
             </table>
 
-			<?php submit_button( 'Save settings' ); ?>
+			<?php submit_button( __('Save settings', 'wc_papr') ); ?>
         </form>
     </div>
 	<?php
@@ -111,7 +113,7 @@ function wc_papr_settings_page(): void {
 
 // Adds the payment method selection and saved data to the product attribute's terms defined in the settings page
 // Get the saved attributes (if any)
-$selected_attributes = maybe_unserialize( get_option( 'wc-papr-product-attributes' ) );
+$selected_attributes = maybe_unserialize( get_option( 'wc_papr_product_attributes' ) );
 
 if ( $selected_attributes ) {
 	foreach ( $selected_attributes as $attribute ) {
@@ -136,7 +138,7 @@ if ( $selected_attributes ) {
 }
 
 function wc_papr_add_payment_method_column_header( $columns ) {
-	$columns['wp_papr_payment_methods'] = 'Compatible payment methods';
+	$columns['wp_papr_payment_methods'] = esc_html__( 'Compatible payment methods', 'wc_papr' );
 
 	return $columns;
 }
