@@ -38,7 +38,7 @@ function wc_papr_filter_payment_methods_by_product_attribute( $payment_methods )
 				}
 			}
 		}
-
-		return $payment_methods;
 	}
+
+	return $payment_methods;
 }
