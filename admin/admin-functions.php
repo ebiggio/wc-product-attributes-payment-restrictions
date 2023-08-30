@@ -2,16 +2,21 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// Add a menu item for the plugin in the WordPress admin menu
-add_action( 'admin_menu', 'wc_papr_add_admin_menu' );
+// Add a menu item for the plugin in the WooCommerce admin menu
+add_action( 'admin_menu', 'wc_papr_add_admin_menu', 99 );
 function wc_papr_add_admin_menu(): void {
-	add_menu_page(
+	// Check user capabilities
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	add_submenu_page(
+		'woocommerce',
 		'Product Attributes Payment Restrictions',
 		'Product Attributes Payment Restrictions',
 		'manage_options',
 		'wc-papr-settings',
 		'wc_papr_settings_page',
-		'dashicons-admin-generic'
 	);
 }
 
@@ -21,12 +26,6 @@ function wc_papr_enqueue_admin_scripts( $hook_suffix ): void {
 	// Enqueue script only on the settings page
 	if ( $hook_suffix === 'toplevel_page_wc-papr-settings' ) {
 		wp_enqueue_script( 'wc_papr', plugin_dir_url( __FILE__ ) . 'admin.js', array( 'jquery' ), WC_PAPR_PLUGIN_VERSION, true );
-
-		// Enqueue Select2 library
-		wp_enqueue_script( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js', array( 'jquery' ), WC_PAPR_PLUGIN_VERSION, true );
-
-		// Enqueue Select2 stylesheet
-		wp_enqueue_style( 'select2', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css' );
 	}
 }
 
