@@ -67,25 +67,25 @@ function wc_papr_settings_page(): void {
 
 	// Display the settings form
 	?>
-    <div class="wrap">
-        <h1 class="wp-heading-inline"><?php echo esc_html( get_admin_page_title() ); ?></h1>
+	<div class="wrap">
+		<h1 class="wp-heading-inline"><?php echo esc_html( get_admin_page_title() ); ?></h1>
 
 		<?php if ( $save_successfully ) { ?>
-            <div class="notice notice-success is-dismissible">
-                <p><?php echo esc_html__( 'Settings saved successfully.', 'wc_papr' ); ?></p>
-            </div>
+			<div class="notice notice-success is-dismissible">
+				<p><?php echo esc_html__( 'Settings saved successfully.', 'wc_papr' ); ?></p>
+			</div>
 		<?php } ?>
 
-        <form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=wc-papr-settings' ) ); ?>">
-            <table class="form-table">
-                <tr>
-                    <th scope="row">
-                        <label for="wc-papr-product-attributes"><?php echo esc_html__( 'Product attributes to be configured', 'wc_papr' ) ?></label>
-                    </th>
-                    <td>
-                        <select name="wc_papr_product_attributes[]" id="wc-papr-product-attributes"
-                                placeholder="data-placeholder=<?php echo esc_attr__( 'Select product attributes', 'wc_papr' ); ?>"
-                                style="width: 100%" multiple>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=wc-papr-settings' ) ); ?>">
+			<table class="form-table">
+				<tr>
+					<th scope="row">
+						<label for="wc-papr-product-attributes"><?php echo esc_html__( 'Product attributes to be configured', 'wc_papr' ) ?></label>
+					</th>
+					<td>
+						<select name="wc_papr_product_attributes[]" id="wc-papr-product-attributes"
+						        placeholder="data-placeholder=<?php echo esc_attr__( 'Select product attributes', 'wc_papr' ); ?>"
+						        style="width: 100%" multiple>
 							<?php
 							foreach ( $product_attributes as $attribute ) {
 								$attribute_name = $attribute->attribute_name;
@@ -97,19 +97,19 @@ function wc_papr_settings_page(): void {
 								echo '<option value="' . esc_attr( $attribute_name ) . '" ' . $selected . '>' . esc_html( $attribute->attribute_label ) . '</option>';
 							}
 							?>
-                        </select>
-                        <p class="description">
+						</select>
+						<p class="description">
 							<?php echo esc_html__( 'Select product attributes that you would like to configure to be compatible with specific payment methods.
 							 After this selection, you can configure the selected attribute\'s terms in the Attributes page to specify which payment methods are
 							  compatible with each term.', 'wc_papr' ) ?>
-                        </p>
-                    </td>
-                </tr>
-            </table>
+						</p>
+					</td>
+				</tr>
+			</table>
 
-			<?php submit_button( __('Save settings', 'wc_papr') ); ?>
-        </form>
-    </div>
+			<?php submit_button( __( 'Save settings', 'wc_papr' ) ); ?>
+		</form>
+	</div>
 	<?php
 }
 
@@ -175,41 +175,41 @@ function wc_papr_edit_term_add_payment_field( $term ): void {
 
 	$payment_methods = WC()->payment_gateways->get_available_payment_gateways();
 	?>
-    <tr class="form-field">
-        <th scope="row">
-            <label for="wc-papr-payment-methods"><?php echo esc_html__( 'Payment methods compatible with this term', 'wc_papr' ); ?></label>
-        </th>
+	<tr class="form-field">
+		<th scope="row">
+			<label for="wc-papr-payment-methods"><?php echo esc_html__( 'Payment methods compatible with this term', 'wc_papr' ); ?></label>
+		</th>
 
-        <td>
-            <select id="wc-papr-payment-methods" name="allowed_payment_methods[]"
-                    data-placeholder="<?php echo esc_attr__( 'Select payment methods', 'wc_papr' ); ?>" style="width: 100%" multiple>
+		<td>
+			<select id="wc-papr-payment-methods" name="allowed_payment_methods[]"
+			        data-placeholder="<?php echo esc_attr__( 'Select payment methods', 'wc_papr' ); ?>" style="width: 100%" multiple>
 				<?php
 				if ( $payment_methods ) {
 					foreach ( $payment_methods as $method ) {
 						?>
-                        <option value="<?php echo esc_attr( $method->id ); ?>"
+						<option value="<?php echo esc_attr( $method->id ); ?>"
 							<?php if ( $term_payment_methods && in_array( $method->id, $term_payment_methods, true ) ) {
 								echo 'selected';
 							} ?>
-                        ><?php echo esc_html( $method->title ); ?></option>
+						><?php echo esc_html( $method->title ); ?></option>
 						<?php
 					}
 				}
 				?>
-            </select>
-            <p class="description">
+			</select>
+			<p class="description">
 				<?php echo esc_html__( 'Select compatible payment methods for the products that use this term.', 'wc_papr' ); ?>
-            </p>
-        </td>
-    </tr>
-    <script>
-        (function ($) {
-            $(document).ready(function () {
-                // Initialize SelectWoo for the select field
-                $('#wc-papr-payment-methods').selectWoo();
-            });
-        })(jQuery);
-    </script>
+			</p>
+		</td>
+	</tr>
+	<script>
+		(function ($) {
+			$(document).ready(function () {
+				// Initialize SelectWoo for the select field
+				$('#wc-papr-payment-methods').selectWoo();
+			});
+		})(jQuery);
+	</script>
 	<?php
 }
 

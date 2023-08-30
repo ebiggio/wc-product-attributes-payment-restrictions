@@ -16,11 +16,11 @@ function wc_papr_filter_payment_methods_by_product_attribute( $payment_methods )
 			}
 
 			// We iterate through the product attributes to get the configured ones
-			foreach ($product_attributes as $attribute_name => $attribute_value) {
+			foreach ( $product_attributes as $attribute_name => $attribute_value ) {
 				// If the attribute is configured to have payment methods restrictions (remember that the attribute name is prefixed with 'pa_')
-				if (in_array(substr($attribute_name, 3), $configured_attribute)) {
+				if ( in_array( substr( $attribute_name, 3 ), $configured_attribute ) ) {
 					// We get the term object, since we need the term ID to get the payment methods configured for the term
-					$term = get_term_by( 'slug', $attribute_value, str_replace('attribute_', '', $attribute_name) );
+					$term = get_term_by( 'slug', $attribute_value, str_replace( 'attribute_', '', $attribute_name ) );
 
 					// We get the payment methods configured for the term
 					$term_payment_methods = get_term_meta( $term->term_id, '_wc_papr_payment_methods', true );
@@ -29,7 +29,7 @@ function wc_papr_filter_payment_methods_by_product_attribute( $payment_methods )
 					if ( $term_payment_methods ) {
 						$term_payment_methods = maybe_unserialize( $term_payment_methods );
 
-						foreach ($payment_methods as $gateway_id => $payment_method) {
+						foreach ( $payment_methods as $gateway_id => $payment_method ) {
 							if ( ! in_array( $gateway_id, $term_payment_methods ) ) {
 								unset( $payment_methods[ $gateway_id ] );
 							}
