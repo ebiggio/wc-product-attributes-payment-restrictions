@@ -1,5 +1,5 @@
 (function ($) {
     $(document).ready(function () {
-        $('#wc-papr-product-attributes').select2();
+        $('#wc-papr-product-attributes').selectWoo();
     });
 })(jQuery);

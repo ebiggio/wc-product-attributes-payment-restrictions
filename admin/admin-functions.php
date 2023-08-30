@@ -20,11 +20,14 @@ function wc_papr_add_admin_menu(): void {
 	);
 }
 
-// Enqueue admin scripts for the settings page so that we can use Select2 (since SelectWoo is not available in this instance)
+// Enqueue admin scripts for the settings page to use SelectWoo
 add_action( 'admin_enqueue_scripts', 'wc_papr_enqueue_admin_scripts' );
 function wc_papr_enqueue_admin_scripts( $hook_suffix ): void {
 	// Enqueue script only on the settings page
-	if ( $hook_suffix === 'toplevel_page_wc-papr-settings' ) {
+	if ( $hook_suffix === 'woocommerce_page_wc-papr-settings' ) {
+		wp_enqueue_script( 'selectWoo' );
+		wp_enqueue_style( 'woocommerce_admin_styles' );
+
 		wp_enqueue_script( 'wc_papr', plugin_dir_url( __FILE__ ) . 'admin.js', array( 'jquery' ), WC_PAPR_PLUGIN_VERSION, true );
 	}
 }
