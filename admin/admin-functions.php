@@ -34,6 +34,7 @@ function wc_papr_enqueue_admin_scripts( $hook_suffix ): void {
 
 // Display the settings page
 function wc_papr_settings_page(): void {
+	// TODO Use WordPress Settings API
 	// Check user capabilities
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
@@ -52,6 +53,24 @@ function wc_papr_settings_page(): void {
 
 			// Save the data in the database
 			update_option( 'wc_papr_product_attributes', maybe_serialize( $selected_attributes ) );
+
+			if (isset($_POST['wc_papr_restrict_variations'])) {
+				update_option( 'wc_papr_restrict_variations', '1');
+			} else {
+				delete_option( 'wc_papr_restrict_variations' );
+			}
+
+			if (isset($_POST['wc_papr_show_site_wide_notice'])) {
+				update_option( 'wc_papr_show_site_wide_notice', '1');
+			} else {
+				delete_option( 'wc_papr_show_site_wide_notice' );
+			}
+
+			if (isset($_POST['wc_papr_show_variations_notice'])) {
+				update_option( 'wc_papr_show_variations_notice', '1');
+			} else {
+				delete_option( 'wc_papr_show_variations_notice' );
+			}
 		} else {
 			delete_option( 'wc_papr_product_attributes' );
 		}
@@ -78,33 +97,85 @@ function wc_papr_settings_page(): void {
 
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=wc-papr-settings' ) ); ?>">
 			<table class="form-table">
-				<tr>
-					<th scope="row">
-						<label for="wc-papr-product-attributes"><?php echo esc_html__( 'Product attributes to be configured', 'wc_papr' ) ?></label>
-					</th>
-					<td>
-						<select name="wc_papr_product_attributes[]" id="wc-papr-product-attributes"
-						        placeholder="data-placeholder=<?php echo esc_attr__( 'Select product attributes', 'wc_papr' ); ?>"
-						        style="width: 100%" multiple>
-							<?php
-							foreach ( $product_attributes as $attribute ) {
-								$attribute_name = $attribute->attribute_name;
-								if ( is_array( $selected_attributes ) && in_array( $attribute_name, $selected_attributes ) ) {
-									$selected = 'selected';
-								} else {
-									$selected = '';
+				<tbody>
+					<tr>
+						<th scope="row">
+							<label for="wc-papr-product-attributes"><?php echo esc_html__( 'Product attributes to be configured', 'wc_papr' ) ?></label>
+						</th>
+						<td>
+							<select name="wc_papr_product_attributes[]" id="wc-papr-product-attributes"
+							        placeholder="data-placeholder=<?php echo esc_attr__( 'Select product attributes', 'wc_papr' ); ?>"
+							        style="width: 100%" multiple>
+								<?php
+								foreach ( $product_attributes as $attribute ) {
+									$attribute_name = $attribute->attribute_name;
+									if ( is_array( $selected_attributes ) && in_array( $attribute_name, $selected_attributes ) ) {
+										$selected = 'selected';
+									} else {
+										$selected = '';
+									}
+									echo '<option value="' . esc_attr( $attribute_name ) . '" ' . $selected . '>' . esc_html( $attribute->attribute_label ) . '</option>';
 								}
-								echo '<option value="' . esc_attr( $attribute_name ) . '" ' . $selected . '>' . esc_html( $attribute->attribute_label ) . '</option>';
-							}
-							?>
-						</select>
-						<p class="description">
-							<?php echo esc_html__( 'Select product attributes that you would like to configure to be compatible with specific payment methods.
-							 After this selection, you can configure the selected attribute\'s terms in the Attributes page to specify which payment methods are
-							  compatible with each term.', 'wc_papr' ) ?>
-						</p>
-					</td>
-				</tr>
+								?>
+							</select>
+							<p class="description">
+								<?php echo esc_html__( 'Select product attributes that you would like to configure to be compatible with specific payment methods.
+								 After this selection, you can configure the selected attribute\'s terms in the Attributes page to specify which payment methods are
+								  compatible with each term.', 'wc_papr' ) ?>
+							</p>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<h2><?php echo esc_html__('Variations restrictions and notices', 'wc_papr') ?></h2>
+			<hr>
+			<table class="form-table">
+				<tbody>
+					<tr>
+						<th scope="row"><?php echo esc_html__('Restrict variations', 'wc_papr') ?></th>
+						<td>
+							<input name="wc_papr_restrict_variations" id="wc-papr-restrict-variations" type="checkbox"
+							       value="1" <?php checked( get_option( 'wc_papr_restrict_variations' ), '1' ); ?>>
+							<label for="wc-papr-restrict-variations">
+								<?php echo esc_html__( 'Restrict variations options according to cart content', 'wc_papr' ) ?>
+							</label>
+							<p class="description">
+								<?php echo esc_html__( 'If enabled, the plugin will restrict the variations options displayed for a product according to the
+									cart content. For example, if the cart contains a product with the color "red" and another product with the color "blue", the
+									variations options for the color attribute will only contain the values "red" and "blue" when trying to add a new product to the cart.'
+									, 'wc_papr' ) ?>
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php echo esc_html__('Notices', 'wc_papr') ?></th>
+						<td>
+							<input name="wc_papr_show_site_wide_notice" id="wc-papr-show-site-wide-notice" type="checkbox"
+							       value="1" <?php checked( get_option( 'wc_papr_show_site_wide_notice' ), '1' ); ?>>
+							<label for="wc-papr-show-site-wide-notice">
+								<?php echo esc_html__( 'Show a site wide notice', 'wc_papr' ) ?>
+							</label>
+							<p class="description">
+								<?php echo esc_html__( 'If enabled, the plugin will show a site wide notice if there are products in the cart that restrict
+								the available payment methods.', 'wc_papr' ) ?>
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"></th>
+						<td>
+							<input name="wc_papr_show_variations_notice" id="wc-papr-show-options-notice" type="checkbox"
+							       value="1" <?php checked( get_option( 'wc_papr_show_variations_notice' ), '1' ); ?>>
+							<label for="wc-papr-show-options-notice">
+								<?php echo esc_html__( 'Show a notice before a product options', 'wc_papr' ) ?>
+							</label>
+							<p class="description">
+								<?php echo esc_html__( 'If enabled, the plugin will show a notice before the product options if there are products in the
+								cart that restrict the available payment methods.', 'wc_papr' ) ?>
+						</td>
+					</tr>
+				</tbody>
 			</table>
 
 			<?php submit_button( __( 'Save settings', 'wc_papr' ) ); ?>
@@ -113,11 +184,11 @@ function wc_papr_settings_page(): void {
 	<?php
 }
 
-// Adds the payment method selection and saved data to the product attribute's terms defined in the settings page
 // Get the saved attributes (if any)
 $selected_attributes = maybe_unserialize( get_option( 'wc_papr_product_attributes' ) );
 
 if ( $selected_attributes ) {
+	// We add filters and actions for each configured attribute's page, so we can select the compatible payment methods and display previous saved data
 	foreach ( $selected_attributes as $attribute ) {
 		// Add a custom column to the product attribute's terms list
 		add_filter( 'manage_edit-pa_' . $attribute . '_columns', 'wc_papr_add_payment_method_column_header' );
@@ -167,6 +238,7 @@ function wc_papr_populate_payment_method_column_data( $custom_column, $column_na
 
 function wc_papr_edit_term_add_payment_field( $term ): void {
 	if ( is_object( $term ) ) {
+		// We're editing a term, so we get its configured payment methods
 		$term_payment_methods = get_term_meta( $term->term_id, '_wc_papr_payment_methods', true );
 		$term_payment_methods = $term_payment_methods ? maybe_unserialize( $term_payment_methods ) : [];
 	} else {
