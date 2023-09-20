@@ -1,16 +1,17 @@
 <?php
 /**
- * Plugin Name: WooCommerce Product Attributes Payment Restrictions (WC PAPR)
+ * Plugin Name: WooCommerce Product Attributes Payment Restrictions
  * Description: Simple plugin to restrict payment methods based on product attributes
- * Version: 1.0.0
+ * Version: 2.0.0
  * Author: Enzo Biggio (ebiggio)
  * Author URI: https://github.com/ebiggio/wc-product-attributes-payment-restrictions
  */
 
-const WC_PAPR_PLUGIN_VERSION = '1.0.0';
+const WC_PAPR_PLUGIN_VERSION = '2.0.0';
 
 if ( is_admin() ) {
 	require_once plugin_dir_path( __FILE__ ) . 'admin/admin-functions.php';
+	new WC_PAPR_Admin_Function_Handler();
 } else {
 	require_once plugin_dir_path( __FILE__ ) . 'front/front-functions.php';
 	new WC_PAPR_Front_Function_Handler();
