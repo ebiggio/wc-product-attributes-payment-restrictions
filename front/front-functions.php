@@ -43,7 +43,7 @@ class WC_PAPR_Front_Function_Handler {
 			return maybe_unserialize( $term_payment_methods );
 		}
 
-		return [];
+		return array();
 	}
 
 	// Checks the products that are in the cart and returns the variation attributes that are configured to have payment methods restrictions
@@ -57,7 +57,7 @@ class WC_PAPR_Front_Function_Handler {
 			return $this->cart_variations_with_payment_restrictions;
 		}
 
-		$cart_variations_with_payment_restrictions = [];
+		$cart_variations_with_payment_restrictions = array();
 
 		// We iterate through the cart items to get the product attributes
 		foreach ( WC()->cart->get_cart() as $cart_item ) {
