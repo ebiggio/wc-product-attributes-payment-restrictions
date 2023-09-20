@@ -278,14 +278,38 @@ function wc_papr_populate_payment_method_column_data( $custom_column, $column_na
 	}
 }
 
+function wc_papr_add_term_add_payment_field(): void {
+	$payment_methods = WC()->payment_gateways->get_available_payment_gateways();
+	?>
+	<div class="form-field">
+		<label for="wc-papr-payment-methods"><?php echo esc_html__( 'Payment methods compatible with this term', 'wc_papr' ); ?></label>
+		<select id="wc-papr-payment-methods" name="allowed_payment_methods[]"
+		        data-placeholder="<?php echo esc_attr__( 'Select payment methods', 'wc_papr' ); ?>" style="width: 100%" multiple>
+			<?php
+			foreach ( $payment_methods as $method ) {
+				?>
+				<option value="<?php echo esc_attr( $method->id ); ?>"><?php echo esc_attr( $method->title ); ?></option>
+				<?php
+			}
+			?>
+		</select>
+		<p class="description"><?php echo esc_html__( 'Select compatible payment methods for the products that use this term.', 'wc_papr' ); ?></p>
+	</div>
+	<script>
+		(function ($) {
+			$(document).ready(function () {
+				// Initialize SelectWoo for the select field
+				$('#wc-papr-payment-methods').selectWoo();
+			});
+		})(jQuery);
+	</script>
+	<?php
+}
+
 function wc_papr_edit_term_add_payment_field( $term ): void {
-	if ( is_object( $term ) ) {
-		// We're editing a term, so we get its configured payment methods
-		$term_payment_methods = get_term_meta( $term->term_id, '_wc_papr_payment_methods', true );
-		$term_payment_methods = $term_payment_methods ? maybe_unserialize( $term_payment_methods ) : [];
-	} else {
-		$term_payment_methods = [];
-	}
+	// We're editing a term, so we get its configured payment methods
+	$term_payment_methods = get_term_meta( $term->term_id, '_wc_papr_payment_methods', true );
+	$term_payment_methods = $term_payment_methods ? maybe_unserialize( $term_payment_methods ) : array();
 
 	$payment_methods = WC()->payment_gateways->get_available_payment_gateways();
 	?>
@@ -298,16 +322,14 @@ function wc_papr_edit_term_add_payment_field( $term ): void {
 			<select id="wc-papr-payment-methods" name="allowed_payment_methods[]"
 			        data-placeholder="<?php echo esc_attr__( 'Select payment methods', 'wc_papr' ); ?>" style="width: 100%" multiple>
 				<?php
-				if ( $payment_methods ) {
-					foreach ( $payment_methods as $method ) {
-						?>
-						<option value="<?php echo esc_attr( $method->id ); ?>"
-							<?php if ( $term_payment_methods && in_array( $method->id, $term_payment_methods, true ) ) {
-								echo 'selected';
-							} ?>
-						><?php echo esc_html( $method->title ); ?></option>
-						<?php
-					}
+				foreach ( $payment_methods as $method ) {
+					?>
+					<option value="<?php echo esc_attr( $method->id ); ?>"
+						<?php if ( $term_payment_methods && in_array( $method->id, $term_payment_methods, true ) ) {
+							echo 'selected';
+						} ?>
+					><?php echo esc_html( $method->title ); ?></option>
+					<?php
 				}
 				?>
 			</select>
