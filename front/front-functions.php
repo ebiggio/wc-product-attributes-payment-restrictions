@@ -61,10 +61,10 @@ class WC_PAPR_Front_Function_Handler {
 
 		// We iterate through the cart items to get the product attributes
 		foreach ( WC()->cart->get_cart() as $cart_item ) {
-			$product_attributes = $cart_item['data']->get_attributes();
-
-			// If the product doesn't have any attributes, we skip it
-			if ( ! $product_attributes ) {
+			// We check if the product is a variation, since we're only interested in those
+			if ( $cart_item['variation_id'] ) {
+				$product_attributes = wc_get_product( $cart_item['variation_id'] )->get_attributes();
+			} else {
 				continue;
 			}
 
@@ -91,16 +91,14 @@ class WC_PAPR_Front_Function_Handler {
 
 	// Filter the payment methods to remove the ones that are not configured for the product attributes in the cart
 	public function wc_papr_filter_payment_methods_by_product_attribute( $payment_methods ) {
-		if ( is_checkout() ) {
-			// We iterate through the cart items to get the product attributes
-			// TODO - Check if the product is a variation
-			foreach ( WC()->cart->get_cart() as $cart_item ) {
-				$product_attributes = $cart_item['data']->get_attributes();
-
-				// If the product doesn't have any attributes, we skip it
-				if ( ! $product_attributes ) {
-					continue;
-				}
+		// We iterate through the cart items to get the product attributes
+		foreach ( WC()->cart->get_cart() as $cart_item ) {
+			// We check if the product is a variation, since we're only interested in those
+			if ( $cart_item['variation_id'] ) {
+				$product_attributes = wc_get_product( $cart_item['variation_id'] )->get_attributes();
+			} else {
+				continue;
+			}
 
 			// We iterate through the product attributes to get the configured ones
 			foreach ( $product_attributes as $attribute_name => $attribute_value ) {
