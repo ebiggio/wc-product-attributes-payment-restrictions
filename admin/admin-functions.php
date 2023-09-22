@@ -8,7 +8,7 @@ class WC_PAPR_Admin_Function_Handler {
 
 	public function __construct() {
 		// Load the plugin settings
-		$this->wc_papr_settings = maybe_unserialize( get_option( 'wc_papr_settings' ) );
+		$this->wc_papr_settings = maybe_unserialize( get_option( 'wc_papr_settings', array() ) );
 
 		// Check if WooCommerce is installed and active
 		if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {

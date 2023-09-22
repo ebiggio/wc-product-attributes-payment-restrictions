@@ -9,7 +9,7 @@ class WC_PAPR_Front_Function_Handler {
 
 	public function __construct() {
 		// Load the plugin settings
-		$this->wc_papr_settings      = maybe_unserialize( get_option( 'wc_papr_settings' ) );
+		$this->wc_papr_settings      = maybe_unserialize( get_option( 'wc_papr_settings', array() ) );
 		$this->configured_attributes = $this->wc_papr_settings['wc_papr_product_attributes'] ?? array();
 
 		// Add filters and actions if the corresponding option is enabled
