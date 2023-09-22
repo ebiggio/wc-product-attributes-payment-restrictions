@@ -161,8 +161,8 @@ class WC_PAPR_Front_Function_Handler {
 		}
 
 		if ( ! empty( $this->cart_variations_with_payment_restrictions ) ) {
-			$notice = __( 'There are products in the cart with payment method restrictions. For an optimal experience buying with us, we only show the 
-			options that are compatible with those selected for the products in the cart', 'wc_papr' );
+			$notice = __( 'There are products in the cart with payment method restrictions. Please keep in mind that selecting an option that is not compatible with those selected for the products in the cart may result no payment methods being available at checkout.'
+				, 'wc-papr' );
 			echo apply_filters( 'woocommerce_demo_store'
 				, '<p class="woocommerce-wc-papr-notice demo_store">' . wp_kses_post( $notice ) . '</p>', $notice );
 		}
@@ -176,8 +176,8 @@ class WC_PAPR_Front_Function_Handler {
 		}
 
 		if ( ! empty( $this->cart_variations_with_payment_restrictions ) ) {
-			wc_print_notice( __( 'There are products in the cart with payment method restrictions. For an optimal experience buying with us, we only show 
-			the options that are compatible with those selected for the products in the cart', 'wc_papr' ), 'notice' );
+			wc_print_notice( __( 'There are products in the cart with payment method restrictions. Please keep in mind that selecting an option that is not compatible with those selected for the products in the cart may result no payment methods being available at checkout.'
+				, 'wc-papr' ), 'notice' );
 		}
 	}
 }
