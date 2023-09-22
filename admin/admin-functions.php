@@ -17,6 +17,9 @@ class WC_PAPR_Admin_Function_Handler {
 			add_action( 'admin_notices', array( $this, 'wc_papr_woocommerce_not_installed_notice' ) );
 		}
 
+		// Add a link to the plugin settings page in the plugins list
+		add_filter( 'plugin_action_links', array( $this, 'add_setting_action_link' ) );
+
 		// Add a menu item for the plugin in the WooCommerce admin menu
 		add_action( 'admin_menu', array( $this, 'wc_papr_add_admin_menu' ), 99 );
 
@@ -48,6 +51,12 @@ class WC_PAPR_Admin_Function_Handler {
 				add_action( 'edited_pa_' . $attribute, callback: 'wc_papr_save_term_payment_methods' );
 			}
 		}
+	}
+
+	public function add_setting_action_link( $links ): array {
+		$settings_link = '<a href="' . admin_url( 'admin.php?page=wc-papr-settings' ) . '">' . esc_html__( 'Settings', 'wc_papr' ) . '</a>';
+
+		return array_merge( array( $settings_link ), $links );
 	}
 
 	// Display a notice if WooCommerce is not installed and active
