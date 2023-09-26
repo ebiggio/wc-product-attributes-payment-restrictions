@@ -18,7 +18,8 @@ class WC_PAPR_Admin_Function_Handler {
 		}
 
 		// Add a link to the plugin settings page in the plugins list
-		add_filter( 'plugin_action_links', array( $this, 'add_setting_action_link' ) );
+		add_filter( 'plugin_action_links_wc-product-attributes-payment-restrictions/wc-product-attributes-payment-restrictions.php'
+			, array( $this, 'add_setting_action_link' ) );
 
 		// Add a menu item for the plugin in the WooCommerce admin menu
 		add_action( 'admin_menu', array( $this, 'wc_papr_add_admin_menu' ), 99 );
