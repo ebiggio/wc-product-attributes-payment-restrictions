@@ -1,0 +1,128 @@
+# Copyright (C) 2023 Enzo Biggio
+# This file is distributed under the same license as the WooCommerce Product Attributes Payment Restrictions plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Product Attributes Payment Restrictions 2.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wc-product-attributes-payment-restrictions\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2023-09-30T01:24:15+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.8.1\n"
+"X-Domain: wc-papr\n"
+
+#. Plugin Name of the plugin
+msgid "WooCommerce Product Attributes Payment Restrictions"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+msgid "https://github.com/ebiggio/wc-product-attributes-payment-restrictions"
+msgstr ""
+
+#. Description of the plugin
+msgid "Simple plugin to restrict payment methods based on product attributes."
+msgstr ""
+
+#. Author of the plugin
+msgid "Enzo Biggio"
+msgstr ""
+
+#: admin/admin-functions.php:58
+msgid "Settings"
+msgstr ""
+
+#: admin/admin-functions.php:67
+msgid "WooCommerce Product Attributes Payment Restrictions requires WooCommerce to be installed and active."
+msgstr ""
+
+#: admin/admin-functions.php:107
+msgid "Product attributes"
+msgstr ""
+
+#: admin/admin-functions.php:111
+msgid "Product attributes to be configured"
+msgstr ""
+
+#: admin/admin-functions.php:115
+msgid "Variations restrictions and notices"
+msgstr ""
+
+#: admin/admin-functions.php:119
+msgid "Restrict variations"
+msgstr ""
+
+#: admin/admin-functions.php:123
+msgid "Notices"
+msgstr ""
+
+#: admin/admin-functions.php:134
+msgid "Select the product attributes that you would like to configure to be compatible with specific payment methods. After this selection, you can configure the selected attribute's terms in the Attributes page to specify which payment methods are compatible with each term."
+msgstr ""
+
+#: admin/admin-functions.php:147
+msgid "Select product attributes"
+msgstr ""
+
+#: admin/admin-functions.php:161
+msgid "These settings are optional and will only work if there are attributes configured with specific payments methods."
+msgstr ""
+
+#: admin/admin-functions.php:169
+msgid "Restrict variations options according to cart content"
+msgstr ""
+
+#: admin/admin-functions.php:172
+msgid "If enabled, the plugin will restrict the variations options displayed for a product according to the cart content. For example, if the cart contains a product with the color \"red\" and another product with the color \"blue\", the variations options for the color attribute will only contain the values \"red\" and \"blue\" when trying to add a new product to the cart."
+msgstr ""
+
+#: admin/admin-functions.php:181
+msgid "Show a site wide notice"
+msgstr ""
+
+#: admin/admin-functions.php:184
+msgid "If enabled, the plugin will show a site wide notice if there are products in the cart that restrict the available payment methods."
+msgstr ""
+
+#: admin/admin-functions.php:193
+msgid "Show a notice before product options"
+msgstr ""
+
+#: admin/admin-functions.php:196
+msgid "If enabled, the plugin will show a notice before the product options if there are products in the cart that restrict the available payment methods."
+msgstr ""
+
+#: admin/admin-functions.php:246
+msgid "Settings saved successfully."
+msgstr ""
+
+#: admin/admin-functions.php:256
+msgid "Save settings"
+msgstr ""
+
+#: admin/admin-functions.php:265
+msgid "Compatible payment methods"
+msgstr ""
+
+#: admin/admin-functions.php:294
+#: admin/admin-functions.php:327
+msgid "Payment methods compatible with this term"
+msgstr ""
+
+#: admin/admin-functions.php:296
+#: admin/admin-functions.php:332
+msgid "Select payment methods"
+msgstr ""
+
+#: admin/admin-functions.php:305
+#: admin/admin-functions.php:346
+msgid "Select compatible payment methods for the products that use this term."
+msgstr ""
+
+#: front/front-functions.php:164
+#: front/front-functions.php:179
+msgid "There are products in the cart with payment method restrictions. Please keep in mind that selecting an option that is not compatible with those selected for the products in the cart may result no payment methods being available at checkout."
+msgstr ""

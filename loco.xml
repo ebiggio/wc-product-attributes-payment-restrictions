@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bundle name="WooCommerce Product Attributes Payment Restrictions">
+  <domain name="wc-papr">
+    <project name="WooCommerce Product Attributes Payment Restrictions" slug="wc-papr">
+      <source>
+        <directory>.</directory>
+      </source>
+      <target>
+        <directory>languages</directory>
+      </target>
+      <template>
+        <file>languages/wc-product-attributes-payment-restrictions.pot</file>
+      </template>
+    </project>
+  </domain>
+</bundle>
