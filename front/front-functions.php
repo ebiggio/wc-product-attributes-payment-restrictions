@@ -91,6 +91,11 @@ class WC_PAPR_Front_Function_Handler {
 
 	// Filter the payment methods to remove the ones that are not configured for the product attributes in the cart
 	public function wc_papr_filter_payment_methods_by_product_attribute( $payment_methods ) {
+		// We check if a cart exists. If it doesn't, we return the original $payment_methods
+		if ( ! WC()->cart ) {
+			return $payment_methods;
+		}
+
 		// We iterate through the cart items to get the product attributes
 		foreach ( WC()->cart->get_cart() as $cart_item ) {
 			// We check if the product is a variation, since we're only interested in those
