@@ -9,6 +9,11 @@
  * Text Domain: wc-papr
  */
 
+// Prevent direct access to this file
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 const WC_PAPR_PLUGIN_VERSION = '2.0.0';
 
 // Load the plugin text domain
