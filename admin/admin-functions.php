@@ -3,19 +3,11 @@
 defined( 'ABSPATH' ) || exit;
 
 class WC_PAPR_Admin_Function_Handler {
-	private bool $woocommerce_active = true;
 	private array $wc_papr_settings;
 
 	public function __construct() {
 		// Load the plugin settings
 		$this->wc_papr_settings = maybe_unserialize( get_option( 'wc_papr_settings', array() ) );
-
-		// Check if WooCommerce is installed and active
-		if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
-			$this->woocommerce_active = false;
-
-			add_action( 'admin_notices', array( $this, 'wc_papr_woocommerce_not_installed_notice' ) );
-		}
 
 		// Add a link to the plugin settings page in the plugins list
 		add_filter( 'plugin_action_links_wc-product-attributes-payment-restrictions/wc-product-attributes-payment-restrictions.php'
@@ -58,15 +50,6 @@ class WC_PAPR_Admin_Function_Handler {
 		$settings_link = '<a href="' . admin_url( 'admin.php?page=wc-papr-settings' ) . '">' . esc_html__( 'Settings', 'wc-papr' ) . '</a>';
 
 		return array_merge( array( $settings_link ), $links );
-	}
-
-	// Display a notice if WooCommerce is not installed and active
-	public function wc_papr_woocommerce_not_installed_notice(): void {
-		?>
-		<div class="notice notice-error is-dismissible">
-			<p><?php echo esc_html__( 'WooCommerce Product Attributes Payment Restrictions requires WooCommerce to be installed and active.', 'wc-papr' ); ?></p>
-		</div>
-		<?php
 	}
 
 	// Add a menu item for the plugin in the WooCommerce admin menu
@@ -232,8 +215,8 @@ class WC_PAPR_Admin_Function_Handler {
 
 	// Display the settings page
 	public function wc_papr_settings_page(): void {
-		// Check user capabilities and WooCommerce status
-		if ( ! current_user_can( 'manage_options' ) || ! $this->woocommerce_active ) {
+		// Check user capabilities
+		if ( ! current_user_can( 'manage_options' )) {
 			return;
 		}
 

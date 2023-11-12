@@ -16,6 +16,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 const WC_PAPR_PLUGIN_VERSION = '2.0.0';
 
+// Check if WooCommerce is installed and active
+if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+	add_action( 'admin_notices', 'wc_papr_woocommerce_not_installed_notice' );
+
+	return;
+}
+
+// Display a notice if WooCommerce is not installed and active
+function wc_papr_woocommerce_not_installed_notice(): void {
+	?>
+    <div class="notice notice-error is-dismissible">
+        <p><?php echo esc_html__( 'WooCommerce Product Attributes Payment Restrictions requires WooCommerce to be installed and active.', 'wc-papr' ); ?></p>
+    </div>
+	<?php
+}
+
 // Load the plugin text domain
 load_plugin_textdomain( 'wc-papr', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
