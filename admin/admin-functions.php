@@ -290,7 +290,6 @@ function wc_papr_add_term_add_payment_field(): void {
 	<script>
 		(function ($) {
 			$(document).ready(function () {
-				// Initialize SelectWoo for the select field
 				$('#wc-papr-payment-methods').selectWoo();
 			});
 		})(jQuery);
@@ -333,7 +332,6 @@ function wc_papr_edit_term_add_payment_field( $term ): void {
 	<script>
 		(function ($) {
 			$(document).ready(function () {
-				// Initialize SelectWoo for the select field
 				$('#wc-papr-payment-methods').selectWoo();
 			});
 		})(jQuery);

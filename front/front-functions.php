@@ -48,11 +48,9 @@ class WC_PAPR_Front_Function_Handler {
 
 	// Checks the products that are in the cart and returns the variation attributes that are configured to have payment methods restrictions
 	private function get_cart_variation_attributes_with_payment_restrictions(): array {
-		/*
-		 * We use the attribute $this->cart_variations_with_payment_restrictions as a sort of cache, so we don't have to process the cart contents every time.
-		 * If it's null, it means that we haven't processed the cart contents yet, so we do it now. Otherwise, we return its value, which can be an empty array
-		 * if there are no product variations with payment methods restrictions in the cart (or if the cart is empty)
-		 */
+		// We use the attribute $this->cart_variations_with_payment_restrictions as a sort of cache, so we don't have to process the cart contents every time.
+		// If it's null, it means that we haven't processed the cart contents yet, so we do it now. Otherwise, we return its value, which can be an empty array
+		// if there are no product variations with payment methods restrictions in the cart (or if the cart is empty)
 		if ( ! is_null( $this->cart_variations_with_payment_restrictions ) ) {
 			return $this->cart_variations_with_payment_restrictions;
 		}
@@ -131,10 +129,8 @@ class WC_PAPR_Front_Function_Handler {
 			return $args;
 		}
 
-		/*
-		 * We check if the variation attribute has already been added to the cart from another product. If it has, we leave only the selected values that
-		 * currently exist in the cart, removing the rest
-		 */
+		// We check if the variation attribute has already been added to the cart from another product. If it has, we leave only the selected values that
+		// currently exist in the cart, removing the rest
 		if ( isset( $this->cart_variations_with_payment_restrictions[ $args['attribute'] ] ) ) {
 			$args['selected'] = $this->cart_variations_with_payment_restrictions[ $args['attribute'] ];
 
@@ -152,11 +148,9 @@ class WC_PAPR_Front_Function_Handler {
 
 	// Show a site-wide notice if the product attributes in the cart have payment methods restrictions
 	public function wc_papr_show_site_wide_notice(): void {
-		/*
-		 * We check if the product attributes in the cart have payment methods restrictions. If they don't, we don't show the site-wide notice. We also don't
-		 * show the notice if the user is in the cart, checkout or account pages
-		 */
-		if ( ! $this->get_cart_variation_attributes_with_payment_restrictions() || is_cart() || is_checkout() || is_account_page() ) {
+		// We check if the product attributes in the cart have payment methods restrictions. If they don't, we don't show the site-wide notice. We also don't
+		// show the notice if the user is in the cart, checkout or account pages
+		if ( ! $this->get_cart_variation_attributes_with_payment_restrictions() || is_cart() || is_checkout_pay_page() || is_account_page() ) {
 			return;
 		}
 
