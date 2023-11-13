@@ -87,18 +87,34 @@ class WC_PAPR_Front_Function_Handler {
 		return $this->cart_variations_with_payment_restrictions;
 	}
 
-	// Filter the payment methods to remove the ones that are not configured for the product attributes in the cart
+	// Filter the available payment methods to leave only the ones that are compatible with the product attributes of the products in the cart or in an order
 	public function wc_papr_filter_payment_methods_by_product_attribute( $payment_methods ) {
-		// We check if a cart exists. If it doesn't, we return the original $payment_methods
-		if ( ! WC()->cart ) {
-			return $payment_methods;
+		// We check if we're in the "order-pay" endpoint, instead of a cart's checkout page
+		if ( is_wc_endpoint_url( 'order-pay' ) ) {
+			// Since we're in the "order-pay" endpoint, we get the order from the ID in the URL.
+			// We need the order to get its products, since the cart might not be related to the order (could be empty or have different products)
+			$order = wc_get_order( absint( get_query_var('order-pay') ) );
+
+			// We check if the order has products. If not, we return the original $payment_methods
+			if ( ! $order->get_items() ) {
+				return $payment_methods;
+			} else {
+				$products_to_check = $order->get_items();
+			}
+		} else {
+			// We check if a cart exists. If not, we return the original $payment_methods
+			if ( ! WC()->cart ) {
+				return $payment_methods;
+			} else {
+				$products_to_check = WC()->cart->get_cart();
+			}
 		}
 
-		// We iterate through the cart items to get the product attributes
-		foreach ( WC()->cart->get_cart() as $cart_item ) {
+		// We iterate through the products to get their attributes
+		foreach ( $products_to_check as $product ) {
 			// We check if the product is a variation, since we're only interested in those
-			if ( $cart_item['variation_id'] ) {
-				$product_attributes = wc_get_product( $cart_item['variation_id'] )->get_attributes();
+			if ( $product['variation_id'] ) {
+				$product_attributes = wc_get_product( $product['variation_id'] )->get_attributes();
 			} else {
 				continue;
 			}
