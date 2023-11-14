@@ -9,7 +9,7 @@ class WC_PAPR_Admin_Function_Handler {
 		// Load the plugin settings
 		$this->wc_papr_settings = maybe_unserialize( get_option( 'wc_papr_settings', array() ) );
 
-		// Add a link to the plugin settings page in the plugins list
+		// Add a link to the plugin settings page in the plugin list
 		add_filter( 'plugin_action_links_wc-product-attributes-payment-restrictions/wc-product-attributes-payment-restrictions.php'
 			, array( $this, 'add_setting_action_link' ) );
 
@@ -25,7 +25,7 @@ class WC_PAPR_Admin_Function_Handler {
 			$selected_attributes = maybe_unserialize( $this->wc_papr_settings['wc_papr_product_attributes'] );
 			// We add filters and actions for each configured attribute's page, so we can select the compatible payment methods and display previous saved data
 			foreach ( $selected_attributes as $attribute ) {
-				// Add a custom column to the product attribute's terms list
+				// Add a custom column to the product attribute's term list
 				add_filter( 'manage_edit-pa_' . $attribute . '_columns', 'wc_papr_add_payment_method_column_header' );
 
 				// Populate the custom column with data
@@ -34,7 +34,7 @@ class WC_PAPR_Admin_Function_Handler {
 				// Allows for the selection of compatible payment methods when adding a new term
 				add_action( 'pa_' . $attribute . '_add_form_fields', 'wc_papr_add_term_add_payment_field' );
 
-				// Add the payment method selection to the product attribute's terms edit page
+				// Add the payment method selection to the product attribute's term edit page
 				add_action( 'pa_' . $attribute . '_edit_form_fields', 'wc_papr_edit_term_add_payment_field' );
 
 				// Save the payment methods selected when adding a new term
@@ -47,7 +47,7 @@ class WC_PAPR_Admin_Function_Handler {
 	}
 
 	public function add_setting_action_link( $links ): array {
-		$settings_link = '<a href="' . admin_url( 'admin.php?page=wc-papr-settings' ) . '">' . esc_html__( 'Settings', 'wc-papr' ) . '</a>';
+		$settings_link = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=wc-papr-settings' ), esc_html__( 'Settings', 'wc-papr' ) );
 
 		return array_merge( array( $settings_link ), $links );
 	}
@@ -92,7 +92,7 @@ class WC_PAPR_Admin_Function_Handler {
 
 		// Select field for the product attributes
 		add_settings_field( 'wc-papr-product-attributes', esc_html__( 'Product attributes to be configured', 'wc-papr' )
-			, array( $this, 'wc_papr_settings_select_options' ), 'wc_papr_settings_page', 'wc-papr-settings-main-section' );
+			, array( $this, 'wc_papr_settings_product_attributes_select' ), 'wc_papr_settings_page', 'wc-papr-settings-main-section' );
 
 		// Section for the variations restrictions and notices
 		add_settings_section( 'wc-papr-settings-restrictions-notices-section', esc_html__( 'Variations restrictions and notices', 'wc-papr' )
@@ -102,13 +102,13 @@ class WC_PAPR_Admin_Function_Handler {
 		add_settings_field( 'wc-papr-restrict-variations', esc_html__( 'Restrict variations', 'wc-papr' )
 			, array( $this, 'wc_papr_settings_restrict_variations_checkbox' ), 'wc_papr_settings_page', 'wc-papr-settings-restrictions-notices-section' );
 
-		// Checkbox field for the site-wide notice
-		add_settings_field( 'wc-papr-show-site-wide-notice', esc_html__( 'Notices', 'wc-papr' )
-			, array( $this, 'wc_papr_settings_show_site_wide_notice_checkbox' ), 'wc_papr_settings_page', 'wc-papr-settings-restrictions-notices-section' );
-
-		// Checkbox field for the variations notice
-		add_settings_field( 'wc-papr-show-variations-notice', ''
+		// Checkbox field for the product variations notice
+		add_settings_field( 'wc-papr-show-variations-notice', esc_html__( 'Notices', 'wc-papr' )
 			, array( $this, 'wc_papr_settings_show_variations_notice_checkbox' ), 'wc_papr_settings_page', 'wc-papr-settings-restrictions-notices-section' );
+
+		// Checkbox field for the site-wide notice
+		add_settings_field( 'wc-papr-show-site-wide-notice', ''
+			, array( $this, 'wc_papr_settings_show_site_wide_notice_checkbox' ), 'wc_papr_settings_page', 'wc-papr-settings-restrictions-notices-section' );
 	}
 
 	public function wc_papr_settings_main_section_callback(): void {
@@ -119,7 +119,7 @@ class WC_PAPR_Admin_Function_Handler {
 		echo '</p>';
 	}
 
-	public function wc_papr_settings_select_options(): void {
+	public function wc_papr_settings_product_attributes_select(): void {
 		// Retrieve all product attributes
 		$product_attributes = wc_get_attribute_taxonomies();
 
@@ -152,7 +152,19 @@ class WC_PAPR_Admin_Function_Handler {
 		     . esc_html__( 'Restrict variations options according to cart content', 'wc-papr' ) . '</label>';
 
 		echo '<p class="description">';
-		echo esc_html__( 'If enabled, the plugin will restrict the variations options displayed for a product according to the cart content. For example, if the cart contains a product with the color "red" and another product with the color "blue", the variations options for the color attribute will only contain the values "red" and "blue" when trying to add a new product to the cart.'
+		echo esc_html__( 'If enabled, the plugin will restrict the variations options displayed for a product according to the cart content. For example, if the cart contains a product with the attribute "Color" selected to "Red", the variations options when viewing a product with the same attribute will only show the "Red" option for selection, even if there are other colors (variations) configured for that product.'
+			, 'wc-papr' );
+		echo '</p>';
+	}
+
+	public function wc_papr_settings_show_variations_notice_checkbox(): void {
+		$checkbox_value = isset( $this->wc_papr_settings['wc_papr_show_variations_notice'] ) ? 1 : 0;
+
+		echo '<label><input type="checkbox" name="wc_papr_settings[wc_papr_show_variations_notice]" value="1" '
+		     . checked( 1, $checkbox_value, false ) . '>' . esc_html__( 'Show a notice before product variations', 'wc-papr' ) . '</label>';
+
+		echo '<p class="description">';
+		echo esc_html__( 'If enabled, the plugin will show a notice before the display of a product\'s variation options if there are products in the cart that restrict the available payment methods.'
 			, 'wc-papr' );
 		echo '</p>';
 	}
@@ -164,19 +176,7 @@ class WC_PAPR_Admin_Function_Handler {
 		     . checked( 1, $checkbox_value, false ) . '>' . esc_html__( 'Show a site wide notice', 'wc-papr' ) . '</label>';
 
 		echo '<p class="description">';
-		echo esc_html__( 'If enabled, the plugin will show a site wide notice if there are products in the cart that restrict the available payment methods.'
-			, 'wc-papr' );
-		echo '</p>';
-	}
-
-	public function wc_papr_settings_show_variations_notice_checkbox(): void {
-		$checkbox_value = isset( $this->wc_papr_settings['wc_papr_show_variations_notice'] ) ? 1 : 0;
-
-		echo '<label><input type="checkbox" name="wc_papr_settings[wc_papr_show_variations_notice]" value="1" '
-		     . checked( 1, $checkbox_value, false ) . '>' . esc_html__( 'Show a notice before product options', 'wc-papr' ) . '</label>';
-
-		echo '<p class="description">';
-		echo esc_html__( 'If enabled, the plugin will show a notice before the product options if there are products in the cart that restrict the available payment methods.'
+		echo esc_html__( 'If enabled, the plugin will show a notice on most pages of the site (except for the cart, checkout and account pages) if there are products in the cart that restrict the available payment methods.'
 			, 'wc-papr' );
 		echo '</p>';
 	}
@@ -200,14 +200,14 @@ class WC_PAPR_Admin_Function_Handler {
 			$sanitized_input['wc_papr_restrict_variations'] = absint( $input['wc_papr_restrict_variations'] );
 		}
 
-		// Sanitize checkbox field for the site-wide notice
-		if ( isset( $input['wc_papr_show_site_wide_notice'] ) ) {
-			$sanitized_input['wc_papr_show_site_wide_notice'] = absint( $input['wc_papr_show_site_wide_notice'] );
-		}
-
 		// Sanitize checkbox field for the variations notice
 		if ( isset( $input['wc_papr_show_variations_notice'] ) ) {
 			$sanitized_input['wc_papr_show_variations_notice'] = absint( $input['wc_papr_show_variations_notice'] );
+		}
+
+		// Sanitize checkbox field for the site-wide notice
+		if ( isset( $input['wc_papr_show_site_wide_notice'] ) ) {
+			$sanitized_input['wc_papr_show_site_wide_notice'] = absint( $input['wc_papr_show_site_wide_notice'] );
 		}
 
 		return $sanitized_input;

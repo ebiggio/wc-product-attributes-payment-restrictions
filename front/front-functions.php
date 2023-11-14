@@ -18,12 +18,12 @@ class WC_PAPR_Front_Function_Handler {
 				add_filter( 'woocommerce_dropdown_variation_attribute_options_args', array( $this, 'wc_papr_customize_variation_dropdown_options' ) );
 			}
 
-			if ( isset( $this->wc_papr_settings['wc_papr_show_site_wide_notice'] ) ) {
-				add_action( 'wp_footer', array( $this, 'wc_papr_show_site_wide_notice' ) );
-			}
-
 			if ( isset( $this->wc_papr_settings['wc_papr_show_variations_notice'] ) ) {
 				add_action( 'woocommerce_before_variations_form', array( $this, 'wc_papr_show_variations_form_notice' ) );
+			}
+
+			if ( isset( $this->wc_papr_settings['wc_papr_show_site_wide_notice'] ) ) {
+				add_action( 'wp_footer', array( $this, 'wc_papr_show_site_wide_notice' ) );
 			}
 
 			add_filter( 'woocommerce_available_payment_gateways', array( $this, 'wc_papr_filter_payment_methods_by_product_attribute' ) );
@@ -162,7 +162,20 @@ class WC_PAPR_Front_Function_Handler {
 		return $args;
 	}
 
-	// Show a site-wide notice if the product attributes in the cart have payment methods restrictions
+	// Show a notice in the variations form of a product if there are products in the cart that restrict the available payment methods
+	public function wc_papr_show_variations_form_notice(): void {
+		// We check if the product attributes in the cart have payment methods restrictions. If they don't, we don't show the notice
+		if ( ! $this->get_cart_variation_attributes_with_payment_restrictions() ) {
+			return;
+		}
+
+		if ( ! empty( $this->cart_variations_with_payment_restrictions ) ) {
+			wc_print_notice( __( 'There are products in the cart with payment method restrictions. Please keep in mind that selecting an option that is not compatible with those selected for the products in the cart may result no payment methods being available at checkout.'
+				, 'wc-papr' ), 'notice' );
+		}
+	}
+
+	// Show a site-wide notice if there are products in the cart that restrict the available payment methods
 	public function wc_papr_show_site_wide_notice(): void {
 		// We check if the product attributes in the cart have payment methods restrictions. If they don't, we don't show the site-wide notice. We also don't
 		// show the notice if the user is in the cart, checkout or account pages
@@ -180,19 +193,6 @@ class WC_PAPR_Front_Function_Handler {
 				, 'wc-papr' );
 			echo apply_filters( 'woocommerce_demo_store'
 				, '<p class="woocommerce-wc-papr-notice demo_store">' . wp_kses_post( $notice ) . '</p>', $notice );
-		}
-	}
-
-	// Show a notice in the variations form if the product attributes in the cart have payment methods restrictions
-	public function wc_papr_show_variations_form_notice(): void {
-		// We check if the product attributes in the cart have payment methods restrictions. If they don't, we don't show the notice
-		if ( ! $this->get_cart_variation_attributes_with_payment_restrictions() ) {
-			return;
-		}
-
-		if ( ! empty( $this->cart_variations_with_payment_restrictions ) ) {
-			wc_print_notice( __( 'There are products in the cart with payment method restrictions. Please keep in mind that selecting an option that is not compatible with those selected for the products in the cart may result no payment methods being available at checkout.'
-				, 'wc-papr' ), 'notice' );
 		}
 	}
 }
